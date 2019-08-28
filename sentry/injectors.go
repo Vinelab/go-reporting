@@ -4,6 +4,8 @@ import (
 	"github.com/getsentry/sentry-go"
 )
 
+const emptyTag = "N/A"
+
 type Injector interface {
 	Inject(event *sentry.Event) *sentry.Event
 }
@@ -18,7 +20,11 @@ func (injector TagInjector) Inject(event *sentry.Event) *sentry.Event {
 	}
 
 	tags := injector.Tags()
+
 	for k, v := range tags {
+		if v == "" {
+			v = emptyTag
+		}
 		event.Tags[k] = v
 	}
 
