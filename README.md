@@ -108,20 +108,23 @@ _ = reporting.RegisterSentry(
 To capture http request data into sentry event `LogResponseMiddleware` should be added to the defined routes
 
 ```go
-package routes
-
 import (
-	v "github.com/husobee/vestigo"
+	"github.com/go-chi/chi"
 	"github.com/Vinelab/go-reporting/sentry"
+	"net/http"
 )
 
-func Register() *v.Router {
+// Register holds the routes to be registered
+// when the server starts listening
+func Register() *chi.Mux {
+	router := chi.NewRouter()
 
-	r := v.NewRouter()
+	//add sentry middleware
+	router.Use(sentry.LogResponseMiddleware())
 
-	r.Get("/", Handler, sentry.LogResponseMiddleware)
+	router.Get("/user", handler)
 
-	return r
+	return router
 }
 ```
 

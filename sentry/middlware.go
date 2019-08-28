@@ -6,10 +6,10 @@ import (
 )
 
 // Record http request data into sentry scope
-func LogResponseMiddleware(handler http.HandlerFunc) http.HandlerFunc {
-	return func(w http.ResponseWriter, r *http.Request) {
+func LogResponseMiddleware(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		hub := sdk.CurrentHub()
 		hub.Scope().SetRequest(sdk.Request{}.FromHTTPRequest(r))
-		handler.ServeHTTP(w, r)
-	}
+		next.ServeHTTP(w, r)
+	})
 }
