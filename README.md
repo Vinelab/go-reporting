@@ -192,4 +192,31 @@ func main() {
 }
 ```
 
+Server can handle requests in separate goroutines, in this case LogPanicMiddleware can be used to log panic errors.
+Note that deferred functions executed using stack order LIFO. So in example below log middleware should be registered after recover
+
+```go
+package routes
+
+import (
+	"github.com/Vinelab/go-reporting"
+	"github.com/go-chi/chi"
+	chiMiddleware "github.com/go-chi/chi/middleware"
+	"github.com/Vinelab/go-reporting/sentry"
+	"net/http"
+)
+
+// Register holds the routes to be registered
+// when the server starts listening
+func Register() *chi.Mux {
+	router := chi.NewRouter()
+
+	router.Use(chiMiddleware.Recoverer)
+	router.Use(reporting.LogPanicMiddleware)
+
+	router.Get("/users", handler)
+
+	return router
+}
+```  
 
