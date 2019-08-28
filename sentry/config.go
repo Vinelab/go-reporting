@@ -32,7 +32,7 @@ func InitDefaultConfig() {
 func getConnectionTimeout(defaultTimeout time.Duration) time.Duration {
 	value := os.Getenv("SENTRY_TIMEOUT")
 
-	if t, err := strconv.ParseInt(value, 10, 64); err != nil {
+	if t, err := strconv.ParseInt(value, 10, 64); err == nil && t > 0 {
 		return time.Second * time.Duration(t)
 	}
 
