@@ -58,6 +58,11 @@ func (hook *Hook) Fire(entry *logrus.Entry) error {
 	hub := sentry.CurrentHub().Clone()
 	hub.CaptureEvent(&event)
 
+	//flush fatal events before exit
+	if entry.Level == logrus.FatalLevel{
+		Flush()
+	}
+
 	return nil
 }
 
