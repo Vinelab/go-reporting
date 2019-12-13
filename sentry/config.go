@@ -1,10 +1,12 @@
 package sentry
 
 import (
-	sdk "github.com/getsentry/sentry-go"
 	"os"
 	"strconv"
+	"strings"
 	"time"
+
+	sdk "github.com/getsentry/sentry-go"
 )
 
 //type aliases for external use
@@ -16,8 +18,8 @@ var Timeout time.Duration
 func InitDefaultConfig() {
 
 	DefaultConfig = Options{
-		Dsn:         os.Getenv("SENTRY_DSN"),
-		Environment: os.Getenv("APP_ENV"),
+		Dsn:         getEnv("SENTRY_DSN", ""),
+		Environment: getEnv("APP_ENV", ""),
 	}
 
 	Timeout = getConnectionTimeout(15)
@@ -30,7 +32,7 @@ func InitDefaultConfig() {
 }
 
 func getConnectionTimeout(defaultTimeout time.Duration) time.Duration {
-	value := os.Getenv("SENTRY_TIMEOUT")
+	value := getEnv("SENTRY_TIMEOUT", "")
 
 	if t, err := strconv.ParseInt(value, 10, 64); err == nil && t > 0 {
 		return time.Second * time.Duration(t)
@@ -40,9 +42,17 @@ func getConnectionTimeout(defaultTimeout time.Duration) time.Duration {
 }
 
 func isSyncTransport() bool {
-	if sync, err := strconv.ParseBool(os.Getenv("SENTRY_SYNC_DELIVERY")); err == nil && sync {
+	if sync, err := strconv.ParseBool(getEnv("SENTRY_SYNC_DELIVERY", "")); err == nil && sync {
 		return true
 	}
 
 	return false
+}
+
+func getEnv(key string, defaultVal string) string {
+	if value, exists := os.LookupEnv(key); exists {
+		return strings.TrimSuffix(value, "\n")
+	}
+
+	return defaultVal
 }

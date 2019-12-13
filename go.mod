@@ -6,4 +6,5 @@ require (
 	github.com/getsentry/sentry-go v0.2.1
 	github.com/imdario/mergo v0.3.7
 	github.com/sirupsen/logrus v1.4.2
+	gopkg.in/yaml.v2 v2.2.7 // indirect
 )
